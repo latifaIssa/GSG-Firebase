@@ -48,24 +48,25 @@ class AuthProvider extends ChangeNotifier {
   }
 
   login() async {
-    await AuthHelper.authHelper
-        .signin(emailController.text, passwordController.text)
-        .then((value) {
-      if (value) {
-        //todo handle login
-        bool isVerifiedEmail = AuthHelper.authHelper.checkEmailVerification();
-        isVerifiedEmail
-            ? RouteHelper.routeHelper
-                .goToPageWithReplacement(HomePage.routeName)
-            : CustomDialog.customDialog.showCustomDialog(
-                'You have to verify your email, press ok to send another email',
-                sendVericiafion);
-        resetControllers();
-      } else {
-        //todo handel error state
-        CustomDialog.customDialog.showCustomDialog('Falid email or password');
-      }
-    });
+    UserCredential userCredential = await AuthHelper.authHelper
+        .signin(emailController.text, passwordController.text);
+    RouteHelper.routeHelper.goToPageWithReplacement(HomePage.routeName);
+    // .then((value) {
+    // if (value) {
+    //   //todo handle login
+    //   bool isVerifiedEmail = AuthHelper.authHelper.checkEmailVerification();
+    //   isVerifiedEmail
+    //       ? RouteHelper.routeHelper
+    //           .goToPageWithReplacement(HomePage.routeName)
+    //       : CustomDialog.customDialog.showCustomDialog(
+    //           'You have to verify your email, press ok to send another email',
+    //           sendVericiafion);
+    //   resetControllers();
+    // } else {
+    //   //todo handel error state
+    //   CustomDialog.customDialog.showCustomDialog('Falid email or password');
+    // }
+    // });
   }
 
   sendVericiafion() {

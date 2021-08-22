@@ -29,31 +29,33 @@ class AuthHelper {
     }
   }
 
-  Future<bool> signin(String email, String password) async {
-    try {
-      UserCredential userCredential = await firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
-      print(await userCredential.user.getIdToken());
-      print(userCredential.user.uid);
-      if (userCredential.user.uid != null) {
-        print(" userLogin ${userCredential.user.uid}");
-        return true;
-      } else {
-        print(" userLogin ${userCredential.user.uid}");
-        return false;
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        CustomDialog.customDialog
-            .showCustomDialog('No user found for that email.');
-        // print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        CustomDialog.customDialog
-            .showCustomDialog('Wrong password provided for that user.');
-        // print('Wrong password provided for that user.');
-      }
-      return false;
-    }
+  Future<UserCredential> signin(String email, String password) async {
+    // try {
+    UserCredential userCredential = await firebaseAuth
+        .signInWithEmailAndPassword(email: email, password: password);
+    return userCredential;
+    // print(await userCredential.user.getIdToken());
+    // print(userCredential.user.uid);
+
+    //   if (userCredential.user.uid != null) {
+    //     print(" userLogin ${userCredential.user.uid}");
+    //     return true;
+    //   } else {
+    //     print(" userLogin ${userCredential.user.uid}");
+    //     return false;
+    //   }
+    // } on FirebaseAuthException catch (e) {
+    //   if (e.code == 'user-not-found') {
+    //     CustomDialog.customDialog
+    //         .showCustomDialog('No user found for that email.');
+    //     // print('No user found for that email.');
+    //   } else if (e.code == 'wrong-password') {
+    //     CustomDialog.customDialog
+    //         .showCustomDialog('Wrong password provided for that user.');
+    //     // print('Wrong password provided for that user.');
+    //   }
+    //   return false;
+    // }
   }
 
   resetPassword(String email) async {

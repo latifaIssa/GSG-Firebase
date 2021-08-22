@@ -7,13 +7,23 @@ class FirestoreHelper {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   addUserToFirestore(RegisterRequest registerRequest) async {
     try {
-      DocumentReference documentReference = await firebaseFirestore
+      // DocumentReference documentReference = await firebaseFirestore
+      //     .collection('Users')
+      //     .add(registerRequest.toMap());
+      // print(documentReference.id);
+      await firebaseFirestore
           .collection('Users')
-          .add(registerRequest.toMap());
-      print(documentReference.id);
+          .doc(registerRequest.id)
+          // .add(registerRequest.toMap());
+          .set(registerRequest.toMap());
     } on Exception catch (e) {
       // TODO
       print(e);
     }
+  }
+
+  getUserFromFirestore(String userId) async {
+    // firebaseFirestore.collection('Users').where('id', isEqualTo: userId).get();
+    firebaseFirestore.collection('Users').doc(userId).get();
   }
 }
