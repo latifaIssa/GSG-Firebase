@@ -3,11 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
+import 'package:gsg_firebase/Auth/helpers/shared_preferences.dart';
+import 'package:gsg_firebase/Auth/models/LoginForm.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
-import 'package:gsg_firebase/Auth/ui/pages/login_page.dart';
-import 'package:gsg_firebase/Auth/ui/pages/reset_password_page.dart';
-import 'package:gsg_firebase/chats/home_page.dart';
-import 'package:gsg_firebase/services/custom_dialog.dart';
+import 'package:gsg_firebase/chats/pages/home_page.dart';
 import 'package:gsg_firebase/services/routes_helper.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -50,7 +49,15 @@ class AuthProvider extends ChangeNotifier {
   login() async {
     UserCredential userCredential = await AuthHelper.authHelper
         .signin(emailController.text, passwordController.text);
+    // FirestoreHelper.firestoreHelper
+    //     .getUserFromFirestore(userCredential.user.uid);
+    //Save current user in local storage
+    LoginUser user = LoginUser(
+        email: userCredential.user.email, password: passwordController.text);
+    SpHelper.spHelper.saveUser(user);
+    resetControllers();
     RouteHelper.routeHelper.goToPageWithReplacement(HomePage.routeName);
+
     // .then((value) {
     // if (value) {
     //   //todo handle login

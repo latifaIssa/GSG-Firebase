@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
+import 'package:gsg_firebase/Auth/models/user_model.dart';
+import 'package:gsg_firebase/services/custom_dialog.dart';
 
 class FirestoreHelper {
   FirestoreHelper._();
@@ -24,6 +26,23 @@ class FirestoreHelper {
 
   getUserFromFirestore(String userId) async {
     // firebaseFirestore.collection('Users').where('id', isEqualTo: userId).get();
-    firebaseFirestore.collection('Users').doc(userId).get();
+    DocumentSnapshot documentSnapshot =
+        await firebaseFirestore.collection('Users').doc(userId).get();
+    CustomDialog.customDialog
+        .showCustomDialog(documentSnapshot.data.toString());
+    print(documentSnapshot.data);
+  }
+
+  getAllUserFromFirestore() async {
+    Future<List<UserModel>> getAllUsersFromFirestore() async {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await firebaseFirestore.collection('Users').get();
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+          querySnapshot.docs;
+      List<UserModel> users =
+          docs.map((e) => UserModel.fromMap(e.data())).toList();
+      print(users.length);
+      return users;
+    }
   }
 }

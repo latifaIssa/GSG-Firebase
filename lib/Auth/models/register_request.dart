@@ -30,21 +30,4 @@ class RegisterRequest {
       'lname': lname,
     };
   }
-
-  // factory RegisterRequest.fromMap(Map<String, dynamic> map) {
-  //   return RegisterRequest(
-  //     id: map['id'],
-  //     email: map['email'],
-  //     password: map['password'],
-  //     city: map['city'],
-  //     country: map['country'],
-  //     fname: map['fname'],
-  //     lname: map['lname'],
-  //   );
-  // }
-
-  // String toJson() => json.encode(toMap());
-
-  // factory RegisterRequest.fromJson(String source) =>
-  //     RegisterRequest.fromMap(json.decode(source));
 }
