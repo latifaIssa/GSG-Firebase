@@ -13,12 +13,18 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       body: Consumer<AuthProvider>(
         builder: (contex, provider, x) {
-          return Column(
-            children: [
-              CustomrTextFeild('Email', provider.emailController),
-              CustomrTextFeild('Password', provider.passwordController),
-              CustomButton('Register', provider.register),
-            ],
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                CustomrTextFeild('FirstName', provider.firstNameController),
+                CustomrTextFeild('LastName', provider.lastNameController),
+                CustomrTextFeild('Country', provider.countryNameController),
+                CustomrTextFeild('City', provider.cityController),
+                CustomrTextFeild('Email', provider.emailController),
+                CustomrTextFeild('Password', provider.passwordController),
+                CustomButton('Register', provider.register),
+              ],
+            ),
           );
         },
       ),

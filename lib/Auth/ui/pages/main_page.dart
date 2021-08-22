@@ -28,11 +28,11 @@ class _AuthMainPageState extends State<AuthMainPage>
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text('Main Page'),
-        toolbarHeight: height * 0.3,
+        // toolbarHeight: height * 0.3,
         bottom: TabBar(
           controller: Provider.of<AuthProvider>(context).tabController,
           tabs: [

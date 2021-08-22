@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
+import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
+import 'package:gsg_firebase/Auth/models/register_request.dart';
 import 'package:gsg_firebase/Auth/ui/pages/login_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/reset_password_page.dart';
 import 'package:gsg_firebase/chats/home_page.dart';
@@ -11,6 +14,10 @@ class AuthProvider extends ChangeNotifier {
   TabController tabController;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController countryNameController = TextEditingController();
 
   resetControllers() {
     emailController.clear();
@@ -19,8 +26,17 @@ class AuthProvider extends ChangeNotifier {
 
   register() async {
     try {
-      await AuthHelper.authHelper
+      UserCredential userCredential = await AuthHelper.authHelper
           .signup(emailController.text, passwordController.text);
+      RegisterRequest registerRequest = RegisterRequest(
+          id: userCredential.user.uid,
+          email: emailController.text,
+          password: passwordController.text,
+          city: cityController.text,
+          country: countryNameController.text,
+          fname: firstNameController.text,
+          lname: lastNameController.text);
+      FirestoreHelper.firestoreHelper.addUserToFirestore(registerRequest);
       await AuthHelper.authHelper.verifyEmail();
       await AuthHelper.authHelper.logout();
       // RouteHelper.routeHelper.goToPageWithReplacement(LoginPage.routeName);
