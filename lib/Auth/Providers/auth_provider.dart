@@ -5,11 +5,15 @@ import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/shared_preferences.dart';
 import 'package:gsg_firebase/Auth/models/LoginForm.dart';
+import 'package:gsg_firebase/Auth/models/countryModel.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
 import 'package:gsg_firebase/chats/pages/home_page.dart';
 import 'package:gsg_firebase/services/routes_helper.dart';
 
 class AuthProvider extends ChangeNotifier {
+  AuthProvider() {
+    getCountriesFromFirestore();
+  }
   TabController tabController;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -21,6 +25,30 @@ class AuthProvider extends ChangeNotifier {
   resetControllers() {
     emailController.clear();
     passwordController.clear();
+  }
+
+  List<CountryModel> countries;
+  List<dynamic> cities = [];
+  CountryModel selectedCountry;
+  String selectedCity;
+  selectCountry(CountryModel countryModel) {
+    this.selectedCountry = countryModel;
+    this.cities = countryModel.cities;
+    selectCity(cities.first.toString());
+    notifyListeners();
+  }
+
+  selectCity(dynamic city) {
+    this.selectedCity = city;
+    notifyListeners();
+  }
+
+  getCountriesFromFirestore() async {
+    List<CountryModel> countries =
+        await FirestoreHelper.firestoreHelper.getAllCountries();
+    this.countries = countries;
+    selectedCountry = countries.first;
+    notifyListeners();
   }
 
   register() async {
