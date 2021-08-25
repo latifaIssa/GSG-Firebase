@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
+import 'package:gsg_firebase/Auth/helpers/firestorage_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/shared_preferences.dart';
 import 'package:gsg_firebase/Auth/models/LoginForm.dart';
@@ -9,6 +12,7 @@ import 'package:gsg_firebase/Auth/models/countryModel.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
 import 'package:gsg_firebase/chats/pages/home_page.dart';
 import 'package:gsg_firebase/services/routes_helper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AuthProvider extends ChangeNotifier {
   AuthProvider() {
@@ -28,7 +32,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   List<CountryModel> countries;
-  List<dynamic> cities = [];
+  List<dynamic> cities;
   CountryModel selectedCountry;
   String selectedCity;
   selectCountry(CountryModel countryModel) {
@@ -47,7 +51,17 @@ class AuthProvider extends ChangeNotifier {
     List<CountryModel> countries =
         await FirestoreHelper.firestoreHelper.getAllCountries();
     this.countries = countries;
-    selectedCountry = countries.first;
+    selectCountry(countries.first);
+    notifyListeners();
+  }
+
+//upload image to firebase
+  File file;
+  selectFile() async {
+    XFile imageFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    this.file = File(imageFile.path);
+    print(imageFile.path);
     notifyListeners();
   }
 
@@ -55,14 +69,18 @@ class AuthProvider extends ChangeNotifier {
     try {
       UserCredential userCredential = await AuthHelper.authHelper
           .signup(emailController.text, passwordController.text);
+      String imageUrl =
+          await FirebaseStorageHelper.firebaseStorageHelper.uploadImage(file);
       RegisterRequest registerRequest = RegisterRequest(
-          id: userCredential.user.uid,
-          email: emailController.text,
-          password: passwordController.text,
-          city: cityController.text,
-          country: countryNameController.text,
-          fname: firstNameController.text,
-          lname: lastNameController.text);
+        id: userCredential.user.uid,
+        email: emailController.text,
+        password: passwordController.text,
+        city: selectedCity,
+        country: selectedCountry.name,
+        fname: firstNameController.text,
+        lname: lastNameController.text,
+        imageUrl: imageUrl,
+      );
       FirestoreHelper.firestoreHelper.addUserToFirestore(registerRequest);
       await AuthHelper.authHelper.verifyEmail();
       await AuthHelper.authHelper.logout();

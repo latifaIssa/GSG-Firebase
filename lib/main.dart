@@ -48,8 +48,8 @@ class FirebaseConfiguration extends StatelessWidget {
             );
           }
           if (dataSnapShot.connectionState == ConnectionState.done) {
-            // return RegisterPage();
-            return SplashScreen();
+            return AuthMainPage();
+            // return SplashScreen();
           }
           return Scaffold(
             body: Center(

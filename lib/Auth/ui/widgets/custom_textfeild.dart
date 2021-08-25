@@ -9,15 +9,15 @@ class CustomrTextFeild extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(
+        vertical: 5,
         horizontal: 10,
-        vertical: 20,
       ),
       child: TextField(
         controller: this.controller,
         decoration: InputDecoration(
           labelText: this.label,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),

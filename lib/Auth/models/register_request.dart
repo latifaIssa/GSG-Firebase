@@ -10,6 +10,7 @@ class RegisterRequest {
   String country;
   String fname;
   String lname;
+  String imageUrl;
   RegisterRequest({
     @required this.id,
     @required this.email,
@@ -18,6 +19,7 @@ class RegisterRequest {
     @required this.country,
     @required this.fname,
     @required this.lname,
+    @required this.imageUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,6 +30,7 @@ class RegisterRequest {
       'country': country,
       'fname': fname,
       'lname': lname,
+      'imageUrl': imageUrl
     };
   }
 }
