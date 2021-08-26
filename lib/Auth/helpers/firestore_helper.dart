@@ -25,13 +25,14 @@ class FirestoreHelper {
     }
   }
 
-  getUserFromFirestore(String userId) async {
+  Future<UserModel> getUserFromFirestore(String userId) async {
     // firebaseFirestore.collection('Users').where('id', isEqualTo: userId).get();
     DocumentSnapshot documentSnapshot =
         await firebaseFirestore.collection('Users').doc(userId).get();
-    CustomDialog.customDialog
-        .showCustomDialog(documentSnapshot.data.toString());
+    // CustomDialog.customDialog
+    //     .showCustomDialog(documentSnapshot.data.toString());
     print(documentSnapshot.data);
+    return UserModel.fromMap(documentSnapshot.data());
   }
 
   getAllUserFromFirestore() async {

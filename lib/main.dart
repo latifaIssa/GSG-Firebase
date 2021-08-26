@@ -24,6 +24,7 @@ Future<void> main() async {
           RegisterPage.routeName: (context) => RegisterPage(),
           ResetPassordPage.routeName: (context) => ResetPassordPage(),
           HomePage.routeName: (context) => HomePage(),
+          AuthMainPage.routeName: (context) => AuthMainPage(),
         },
         navigatorKey: RouteHelper.routeHelper.navKey,
         home: FirebaseConfiguration(),

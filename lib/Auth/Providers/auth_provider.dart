@@ -10,6 +10,8 @@ import 'package:gsg_firebase/Auth/helpers/shared_preferences.dart';
 import 'package:gsg_firebase/Auth/models/LoginForm.dart';
 import 'package:gsg_firebase/Auth/models/countryModel.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
+import 'package:gsg_firebase/Auth/models/user_model.dart';
+import 'package:gsg_firebase/Auth/ui/pages/main_page.dart';
 import 'package:gsg_firebase/chats/pages/home_page.dart';
 import 'package:gsg_firebase/services/routes_helper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +27,13 @@ class AuthProvider extends ChangeNotifier {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController countryNameController = TextEditingController();
+
+  UserModel user;
+  getUserFromFirebase() async {
+    String userId = AuthHelper.authHelper.getUserId();
+    user = await FirestoreHelper.firestoreHelper.getUserFromFirestore(userId);
+    notifyListeners();
+  }
 
   resetControllers() {
     emailController.clear();
@@ -130,5 +139,14 @@ class AuthProvider extends ChangeNotifier {
   ResetPassword() async {
     AuthHelper.authHelper.resetPassword(emailController.text);
     resetControllers();
+  }
+
+  checkLogin() {
+    bool isLoggedIn = AuthHelper.authHelper.checkUserLogin();
+    if (isLoggedIn) {
+      RouteHelper.routeHelper.goToPageWithReplacement(HomePage.routeName);
+    } else {
+      RouteHelper.routeHelper.goToPageWithReplacement(AuthMainPage.routeName);
+    }
   }
 }
