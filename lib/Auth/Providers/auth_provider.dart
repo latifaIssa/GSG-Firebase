@@ -149,4 +149,9 @@ class AuthProvider extends ChangeNotifier {
       RouteHelper.routeHelper.goToPageWithReplacement(AuthMainPage.routeName);
     }
   }
+
+  logOut() {
+    AuthHelper.authHelper.logout();
+    RouteHelper.routeHelper.goToPageWithReplacement(AuthMainPage.routeName);
+  }
 }

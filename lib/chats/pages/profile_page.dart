@@ -15,39 +15,49 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<AuthProvider>(context, listen: false)
-        .getCountriesFromFirestore();
+    Provider.of<AuthProvider>(context, listen: false).getUserFromFirebase();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+            IconButton(
+                onPressed: () {
+                  Provider.of<AuthProvider>(context, listen: false).logOut();
+                },
+                icon: Icon(Icons.logout))
+          ],
+        ),
         body: Consumer<AuthProvider>(builder: (context, provider, x) {
-      return provider.user == null
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: CircleAvatar(
-                    // height: 200,
-                    // width: 200,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: provider.file == null
-                        ? AssetImage('assets/images/defaultProfileImage.png')
-                        : FileImage(
-                            provider.file,
-                          ),
-                    radius: 70,
-                  ),
-                ),
-                ItemWidget('Email', provider.user.email),
-                ItemWidget('First Name', provider.user.fName),
-                ItemWidget('Last Name', provider.user.lName),
-                ItemWidget('City', provider.user.city),
-                ItemWidget('Country', provider.user.country),
-              ],
-            );
-    }));
+          return provider.user == null
+              ? Center(child: CircularProgressIndicator())
+              : Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {},
+                      child: CircleAvatar(
+                        // height: 200,
+                        // width: 200,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: provider.file == null
+                            ? AssetImage(
+                                'assets/images/defaultProfileImage.png')
+                            : FileImage(
+                                provider.file,
+                              ),
+                        radius: 70,
+                      ),
+                    ),
+                    ItemWidget('Email', provider.user.email),
+                    ItemWidget('First Name', provider.user.fName),
+                    ItemWidget('Last Name', provider.user.lName),
+                    ItemWidget('City', provider.user.city),
+                    ItemWidget('Country', provider.user.country),
+                  ],
+                );
+        }));
   }
 }
