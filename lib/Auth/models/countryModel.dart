@@ -6,7 +6,7 @@ class CountryModel {
   String name;
   List<dynamic> cities;
   CountryModel({
-    @required this.id,
+    // @required this.id,
     @required this.name,
     @required this.cities,
   });

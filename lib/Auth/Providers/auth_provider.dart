@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestorage_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
-import 'package:gsg_firebase/Auth/helpers/shared_preferences.dart';
 import 'package:gsg_firebase/Auth/models/LoginForm.dart';
 import 'package:gsg_firebase/Auth/models/countryModel.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
@@ -40,8 +39,9 @@ class AuthProvider extends ChangeNotifier {
     passwordController.clear();
   }
 
+//select country and city
   List<CountryModel> countries;
-  List<dynamic> cities;
+  List<dynamic> cities = [];
   CountryModel selectedCountry;
   String selectedCity;
   selectCountry(CountryModel countryModel) {
@@ -86,11 +86,11 @@ class AuthProvider extends ChangeNotifier {
         password: passwordController.text,
         city: selectedCity,
         country: selectedCountry.name,
-        fname: firstNameController.text,
-        lname: lastNameController.text,
+        fName: firstNameController.text,
+        lName: lastNameController.text,
         imageUrl: imageUrl,
       );
-      FirestoreHelper.firestoreHelper.addUserToFirestore(registerRequest);
+      await FirestoreHelper.firestoreHelper.addUserToFirestore(registerRequest);
       await AuthHelper.authHelper.verifyEmail();
       await AuthHelper.authHelper.logout();
       // RouteHelper.routeHelper.goToPageWithReplacement(LoginPage.routeName);
@@ -104,14 +104,11 @@ class AuthProvider extends ChangeNotifier {
   login() async {
     UserCredential userCredential = await AuthHelper.authHelper
         .signin(emailController.text, passwordController.text);
-    // FirestoreHelper.firestoreHelper
-    //     .getUserFromFirestore(userCredential.user.uid);
-    //Save current user in local storage
-    LoginUser user = LoginUser(
-        email: userCredential.user.email, password: passwordController.text);
-    SpHelper.spHelper.saveUser(user);
-    resetControllers();
+    FirestoreHelper.firestoreHelper
+        .getUserFromFirestore(userCredential.user.uid);
     RouteHelper.routeHelper.goToPageWithReplacement(HomePage.routeName);
+
+    resetControllers();
 
     // .then((value) {
     // if (value) {
@@ -136,7 +133,7 @@ class AuthProvider extends ChangeNotifier {
     AuthHelper.authHelper.logout();
   }
 
-  ResetPassword() async {
+  resetPassword() async {
     AuthHelper.authHelper.resetPassword(emailController.text);
     resetControllers();
   }
@@ -150,8 +147,55 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  logOut() {
-    AuthHelper.authHelper.logout();
+  logOut() async {
+    await AuthHelper.authHelper.logout();
     RouteHelper.routeHelper.goToPageWithReplacement(AuthMainPage.routeName);
+  }
+
+  fillControllers() {
+    firstNameController.text = user.fName;
+    lastNameController.text = user.lName;
+    cityController.text = user.city;
+    countryNameController.text = user.country;
+    emailController.text = user.email;
+  }
+
+  File updatedfile;
+  CaptureUpdateProfileImage() async {
+    XFile file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    this.updatedfile = File(file.path);
+    notifyListeners();
+  }
+
+  updateProfile() async {
+    String imageUrl, prevImage;
+    // UserModel userModel;
+    if (updatedfile != null) {
+      imageUrl = await FirebaseStorageHelper.firebaseStorageHelper
+          .uploadImage(updatedfile);
+      // prevImage =
+      //     await FirebaseStorageHelper.firebaseStorageHelper.uploadImage(file);
+
+    }
+    UserModel userModel = imageUrl == null
+        ? UserModel(
+            city: cityController.text,
+            country: countryNameController.text,
+            fName: firstNameController.text,
+            lName: lastNameController.text,
+            id: user.id,
+            // imageUrl: prevImage,
+          )
+        : UserModel(
+            city: cityController.text,
+            country: countryNameController.text,
+            fName: firstNameController.text,
+            lName: lastNameController.text,
+            id: user.id,
+            imageUrl: imageUrl);
+
+    await FirestoreHelper.firestoreHelper.updateProfile(userModel);
+    getUserFromFirebase();
+    Navigator.of(RouteHelper.routeHelper.navKey.currentContext).pop();
   }
 }

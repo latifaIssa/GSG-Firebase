@@ -35,17 +35,14 @@ class FirestoreHelper {
     return UserModel.fromMap(documentSnapshot.data());
   }
 
-  getAllUserFromFirestore() async {
-    Future<List<UserModel>> getAllUsersFromFirestore() async {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await firebaseFirestore.collection('Users').get();
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
-          querySnapshot.docs;
-      List<UserModel> users =
-          docs.map((e) => UserModel.fromMap(e.data())).toList();
-      print(users.length);
-      return users;
-    }
+  Future<List<UserModel>> getAllUsersFromFirestore() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await firebaseFirestore.collection('Users').get();
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = querySnapshot.docs;
+    List<UserModel> users =
+        docs.map((e) => UserModel.fromMap(e.data())).toList();
+    print(users.length);
+    return users;
   }
 
   Future<List<CountryModel>> getAllCountries() async {
@@ -55,5 +52,12 @@ class FirestoreHelper {
       return CountryModel.fromJson(e.data());
     }).toList();
     return countries;
+  }
+
+  updateProfile(UserModel userModel) async {
+    await firebaseFirestore
+        .collection('Users')
+        .doc(userModel.id)
+        .update(userModel.toMap());
   }
 }

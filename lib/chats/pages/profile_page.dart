@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/Providers/auth_provider.dart';
+import 'package:gsg_firebase/chats/pages/update_profile.dart';
 import 'package:gsg_firebase/chats/widges/item_widget.dart';
+import 'package:gsg_firebase/services/routes_helper.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,43 +23,58 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-            IconButton(
-                onPressed: () {
-                  Provider.of<AuthProvider>(context, listen: false).logOut();
-                },
-                icon: Icon(Icons.logout))
-          ],
-        ),
-        body: Consumer<AuthProvider>(builder: (context, provider, x) {
+      appBar: AppBar(
+        title: Text('My Profile'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Provider.of<AuthProvider>(context, listen: false)
+                    .fillControllers();
+                RouteHelper.routeHelper.goToPage(UpdateProfile.routeName);
+              },
+              icon: Icon(Icons.edit)),
+          IconButton(
+              onPressed: () {
+                Provider.of<AuthProvider>(context, listen: false).logOut();
+              },
+              icon: Icon(Icons.logout))
+        ],
+      ),
+      body: Consumer<AuthProvider>(
+        builder: (context, provider, x) {
           return provider.user == null
               ? Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: CircleAvatar(
-                        // height: 200,
-                        // width: 200,
-                        backgroundColor: Colors.grey,
-                        backgroundImage: provider.file == null
-                            ? AssetImage(
-                                'assets/images/defaultProfileImage.png')
-                            : FileImage(
-                                provider.file,
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      provider.user.imageUrl == null
+                          ? CircleAvatar(
+                              // height: 200,
+                              // width: 200,
+                              // backgroundColor: Colors.grey,
+                              backgroundImage: AssetImage(
+                                  'assets/images/defaultProfileImage.png'),
+                              radius: 70,
+                            )
+                          : CircleAvatar(
+                              // height: 200,
+                              // width: 200,
+                              backgroundColor: Colors.grey,
+                              backgroundImage: NetworkImage(
+                                provider.user.imageUrl,
                               ),
-                        radius: 70,
-                      ),
-                    ),
-                    ItemWidget('Email', provider.user.email),
-                    ItemWidget('First Name', provider.user.fName),
-                    ItemWidget('Last Name', provider.user.lName),
-                    ItemWidget('City', provider.user.city),
-                    ItemWidget('Country', provider.user.country),
-                  ],
+                              radius: 70,
+                            ),
+                      ItemWidget('Email', provider.user.email),
+                      ItemWidget('First Name', provider.user.fName),
+                      ItemWidget('Last Name', provider.user.lName),
+                      ItemWidget('City', provider.user.city),
+                      ItemWidget('Country', provider.user.country),
+                    ],
+                  ),
                 );
-        }));
+        },
+      ),
+    );
   }
 }

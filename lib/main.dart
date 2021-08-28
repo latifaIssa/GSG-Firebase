@@ -6,15 +6,16 @@ import 'package:gsg_firebase/Auth/ui/pages/main_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/register_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/reset_password_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/splash_screen.dart';
+import 'package:gsg_firebase/chats/pages/profile_page.dart';
+import 'package:gsg_firebase/chats/pages/update_profile.dart';
+import 'package:gsg_firebase/chats/pages/users_page.dart';
 import 'package:gsg_firebase/services/routes_helper.dart';
 import 'package:provider/provider.dart';
 
-import 'Auth/helpers/shared_preferences.dart';
 import 'chats/pages/home_page.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); //when exist onther code to execute
-  await SpHelper.spHelper.initSharedPrefernces();
+  // WidgetsFlutterBinding.ensureInitialized(); //when exist onther code to execute
   runApp(
     ChangeNotifierProvider<AuthProvider>(
       create: (context) => AuthProvider(),
@@ -25,6 +26,9 @@ Future<void> main() async {
           ResetPassordPage.routeName: (context) => ResetPassordPage(),
           HomePage.routeName: (context) => HomePage(),
           AuthMainPage.routeName: (context) => AuthMainPage(),
+          UserPage.routeName: (context) => UserPage(),
+          ProfilePage.routeName: (context) => ProfilePage(),
+          UpdateProfile.routeName: (context) => UpdateProfile(),
         },
         navigatorKey: RouteHelper.routeHelper.navKey,
         home: FirebaseConfiguration(),
@@ -49,8 +53,8 @@ class FirebaseConfiguration extends StatelessWidget {
             );
           }
           if (dataSnapShot.connectionState == ConnectionState.done) {
-            return AuthMainPage();
-            // return SplashScreen();
+            // return AuthMainPage();
+            return SplashScreen();
           }
           return Scaffold(
             body: Center(

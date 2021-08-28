@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ItemWidget extends StatelessWidget {
+class TextFeildWidget extends StatelessWidget {
   String label;
-  String value;
-  ItemWidget(this.label, this.value);
+  TextEditingController valueController;
+  TextFeildWidget(this.label, this.valueController);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,9 +15,11 @@ class ItemWidget extends StatelessWidget {
             label,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
           ),
-          Text(
-            value,
-            style: TextStyle(fontSize: 22),
+          Expanded(
+            child: TextField(
+              controller: valueController,
+              style: TextStyle(fontSize: 22),
+            ),
           ),
         ],
       ),
