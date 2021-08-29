@@ -28,9 +28,17 @@ class AuthProvider extends ChangeNotifier {
   TextEditingController countryNameController = TextEditingController();
 
   UserModel user;
+  String myId;
+  List<UserModel> users;
   getUserFromFirebase() async {
     String userId = AuthHelper.authHelper.getUserId();
     user = await FirestoreHelper.firestoreHelper.getUserFromFirestore(userId);
+    notifyListeners();
+  }
+
+  getAllUsers() async {
+    users = await FirestoreHelper.firestoreHelper.getAllUsersFromFirestore();
+    users.removeWhere((e) => e.id == myId);
     notifyListeners();
   }
 
@@ -141,6 +149,8 @@ class AuthProvider extends ChangeNotifier {
   checkLogin() {
     bool isLoggedIn = AuthHelper.authHelper.checkUserLogin();
     if (isLoggedIn) {
+      myId = AuthHelper.authHelper.getUserId();
+      getAllUsers();
       RouteHelper.routeHelper.goToPageWithReplacement(HomePage.routeName);
     } else {
       RouteHelper.routeHelper.goToPageWithReplacement(AuthMainPage.routeName);
@@ -184,7 +194,6 @@ class AuthProvider extends ChangeNotifier {
             fName: firstNameController.text,
             lName: lastNameController.text,
             id: user.id,
-            // imageUrl: prevImage,
           )
         : UserModel(
             city: cityController.text,

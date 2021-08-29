@@ -28,12 +28,19 @@ class UserModel {
     this.imageUrl = map['imageUrl'];
   }
   toMap() {
-    return {
-      'city': this.city,
-      'country': this.country,
-      'fName': this.fName,
-      'lName': this.lName,
-      'imageUrl': this.imageUrl,
-    };
+    return imageUrl == null
+        ? {
+            'city': this.city,
+            'country': this.country,
+            'fName': this.fName,
+            'lName': this.lName,
+          }
+        : {
+            'city': this.city,
+            'country': this.country,
+            'fName': this.fName,
+            'lName': this.lName,
+            'imageUrl': this.imageUrl,
+          };
   }
 }
