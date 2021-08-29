@@ -6,6 +6,7 @@ import 'package:gsg_firebase/Auth/ui/pages/main_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/register_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/reset_password_page.dart';
 import 'package:gsg_firebase/Auth/ui/pages/splash_screen.dart';
+import 'package:gsg_firebase/chats/pages/chat_page.dart';
 import 'package:gsg_firebase/chats/pages/profile_page.dart';
 import 'package:gsg_firebase/chats/pages/update_profile.dart';
 import 'package:gsg_firebase/chats/pages/users_page.dart';
@@ -29,6 +30,7 @@ Future<void> main() async {
           UserPage.routeName: (context) => UserPage(),
           ProfilePage.routeName: (context) => ProfilePage(),
           UpdateProfile.routeName: (context) => UpdateProfile(),
+          ChatPage.routeName: (context) => ChatPage(),
         },
         navigatorKey: RouteHelper.routeHelper.navKey,
         home: FirebaseConfiguration(),

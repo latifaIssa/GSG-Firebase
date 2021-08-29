@@ -72,6 +72,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gsg_firebase/chats/pages/chat_page.dart';
 import 'package:gsg_firebase/chats/pages/profile_page.dart';
 import 'package:gsg_firebase/chats/pages/users_page.dart';
 
@@ -83,10 +84,10 @@ class HomePage extends StatelessWidget {
     //   body: ProfilePage(),
     // );
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         body: TabBarView(
-          children: [UserPage(), ProfilePage()],
+          children: [UserPage(), ProfilePage(), ChatPage()],
         ),
       ),
     );
