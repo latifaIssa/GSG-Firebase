@@ -13,7 +13,10 @@ class FirestoreHelper {
   String message;
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getFirestoreStream() {
-    return firebaseFirestore.collection('Chats').snapshots();
+    return firebaseFirestore
+        .collection('Chats')
+        // .orderBy('dateTime') instead of sort
+        .snapshots();
   }
 
   addMessagesToFirestore(Map map) async {

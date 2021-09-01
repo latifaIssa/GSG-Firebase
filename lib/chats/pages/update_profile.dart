@@ -39,7 +39,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    provider.CaptureUpdateProfileImage();
+                    provider.captureUpdateProfileImage();
                   },
                   child: CircleAvatar(
                     // height: 200,

@@ -9,11 +9,11 @@ class FirebaseStorageHelper {
   FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
   //we need to imort io library(input/output) for files.
-  uploadImage(File file) async {
+  uploadImage(File file, [String folderName = 'profiles']) async {
     //1- make a reference for this file in firebase storage
     String filePath = file.path;
     String fileName = filePath.split('/').last;
-    String path = 'images/profiles/$fileName';
+    String path = 'images/$folderName/$fileName';
     Reference reference = firebaseStorage.ref(path);
     //2- upload the file to the defined refernce
     await reference.putFile(file);

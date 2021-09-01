@@ -170,8 +170,20 @@ class AuthProvider extends ChangeNotifier {
     emailController.text = user.email;
   }
 
+  sendImageToChat([String message]) async {
+    XFile file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    String imageUrl = await FirebaseStorageHelper.firebaseStorageHelper
+        .uploadImage(File(file.path), 'chats');
+    FirestoreHelper.firestoreHelper.addMessagesToFirestore({
+      'message': message ?? '',
+      'dateTime': DateTime.now(),
+      'userId': this.myId,
+      'imageUrl': imageUrl ?? ''
+    });
+  }
+
   File updatedfile;
-  CaptureUpdateProfileImage() async {
+  captureUpdateProfileImage() async {
     XFile file = await ImagePicker().pickImage(source: ImageSource.gallery);
     this.updatedfile = File(file.path);
     notifyListeners();
