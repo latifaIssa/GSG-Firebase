@@ -4,26 +4,31 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/Providers/auth_provider.dart';
 import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
-import 'package:gsg_firebase/Auth/helpers/firestorage_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
+import 'package:gsg_firebase/chats/widges/BubbleWidget.dart';
 import 'package:provider/provider.dart';
 
-class ChatPage extends StatelessWidget {
-  String message;
+class ChatPage extends StatefulWidget {
   static final routeName = 'chat';
-  bool delivered;
+
+  @override
+  _ChatPageState createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  String message;
+  bool isMe;
 
   String userId = AuthHelper.authHelper.getUserId();
-
   TextEditingController sendController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
   sendMessageToFirebase() async {
     sendController.clear();
     FirestoreHelper.firestoreHelper.addMessagesToFirestore({
-      'message': this.message ?? '',
+      'type': 'message',
       'dateTime': DateTime.now(),
-      'imageUrl': ''
+      'content': this.message ?? ''
     });
 
     // this.message = '';
@@ -71,83 +76,21 @@ class ChatPage extends StatelessWidget {
                             // reverse: true,
                             itemCount: messages.length,
                             itemBuilder: (context, i) {
-                              // return messages[i]['message'] == null
-                              //     ? Bubble(
-                              //         margin: BubbleEdges.only(
-                              //           bottom: 10,
-                              //           top: 5,
-                              //         ),
-                              //         alignment:
-                              //             this.userId == messages[i]['userId']
-                              //                 ? Alignment.topLeft
-                              //                 : Alignment.topRight,
-                              //         nip: this.userId == messages[i]['userId']
-                              //             ? BubbleNip.leftBottom
-                              //             : BubbleNip.rightBottom,
-                              //         color:
-                              //             this.userId == messages[i]['userId']
-                              //                 ? Colors.grey[200]
-                              //                 : Colors.blue,
-                              //         child: Text(
-                              //           '',
-                              //           textAlign: TextAlign.center,
-                              //           style: TextStyle(fontSize: 15.0),
-                              //         ),
-                              //         elevation: 1,
-                              //       ):
-                              return messages[i]['imageUrl'] == ''
-                                  ? Bubble(
-                                      // margin: BubbleEdges.only(
-                                      //   bottom: 10,
-                                      //   top: 2,
-                                      // ),
-                                      margin: BubbleEdges.symmetric(
-                                        vertical: 5,
-                                        horizontal: 5,
-                                      ),
-                                      padding: BubbleEdges.all(
-                                        15,
-                                      ),
-                                      alignment:
-                                          this.userId == messages[i]['userId']
-                                              ? Alignment.topLeft
-                                              : Alignment.topRight,
-                                      nip: this.userId == messages[i]['userId']
-                                          ? BubbleNip.leftBottom
-                                          : BubbleNip.rightBottom,
-                                      color:
-                                          this.userId == messages[i]['userId']
-                                              ? Colors.grey[200]
-                                              : Colors.blue,
-                                      child: Text(
-                                        messages[i]['message'],
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontSize: 15.0),
-                                      ),
-                                      elevation: 1,
+                              isMe = this.userId == messages[i]['userId'];
+                              return isMe
+                                  ? BubbleWidget(
+                                      Colors.grey[200],
+                                      messages[i]['type'],
+                                      messages[i],
+                                      Alignment.topLeft,
+                                      BubbleNip.leftBottom,
                                     )
-                                  : Bubble(
-                                      margin: BubbleEdges.symmetric(
-                                        vertical: 5,
-                                        horizontal: 5,
-                                      ),
-                                      padding: BubbleEdges.all(
-                                        15,
-                                      ),
-                                      alignment:
-                                          this.userId == messages[i]['userId']
-                                              ? Alignment.topLeft
-                                              : Alignment.topRight,
-                                      nip: this.userId == messages[i]['userId']
-                                          ? BubbleNip.leftBottom
-                                          : BubbleNip.rightBottom,
-                                      color:
-                                          this.userId == messages[i]['userId']
-                                              ? Colors.grey[200]
-                                              : Colors.blue,
-                                      child: Image.network(
-                                          messages[i]['imageUrl']),
-                                      elevation: 1,
+                                  : BubbleWidget(
+                                      Colors.blue,
+                                      messages[i]['type'],
+                                      messages[i],
+                                      Alignment.topRight,
+                                      BubbleNip.rightBottom,
                                     );
                             });
                       },
@@ -170,6 +113,39 @@ class ChatPage extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
+                              Container(
+                                height: 40,
+                                margin: EdgeInsets.fromLTRB(5, 5, 10, 5),
+                                decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: provider.isRecording
+                                              ? Colors.white
+                                              : Colors.black12,
+                                          spreadRadius: 4)
+                                    ],
+                                    color: Colors.blue[200],
+                                    shape: BoxShape.circle),
+                                child: GestureDetector(
+                                  onLongPress: () {
+                                    provider.startRecord();
+                                    // isRecording = true;
+                                  },
+                                  onLongPressEnd: (details) {
+                                    provider.stopRecord();
+
+                                    // isRecording = false;
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Icon(
+                                      Icons.mic,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               IconButton(
                                 onPressed: () {
                                   provider.sendImageToChat();
@@ -209,11 +185,5 @@ class ChatPage extends StatelessWidget {
             ),
           );
         }));
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
   }
 }

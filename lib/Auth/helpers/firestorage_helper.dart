@@ -21,4 +21,26 @@ class FirebaseStorageHelper {
     String imageUrl = await reference.getDownloadURL();
     return imageUrl;
   }
+
+  uploadAudio(String file) async {
+    firebaseStorage.ref().child(
+        'profilepics/audio${DateTime.now().millisecondsSinceEpoch.toString()}}.jpg');
+
+    // StorageUploadTask task = Reference.putFile(File(recordFilePath));
+
+    Reference reference = firebaseStorage.ref(file);
+    await reference.putFile(File(file));
+    var audioURL = await reference.getDownloadURL();
+    // String strVal = audioURL.toString();
+    return audioURL;
+    // await sendAudioMsg(strVal);
+    // reference.onComplete.then((value) async {
+    //   print('##############done#########');
+    //   var audioURL = await value.ref.getDownloadURL();
+    //   String strVal = audioURL.toString();
+    //   await sendAudioMsg(strVal);
+    // }).catchError((e) {
+    //   print(e);
+    // });
+  }
 }

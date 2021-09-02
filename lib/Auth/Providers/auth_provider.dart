@@ -1,19 +1,27 @@
 import 'dart:io';
 
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gsg_firebase/Auth/helpers/auth_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestorage_helper.dart';
 import 'package:gsg_firebase/Auth/helpers/firestore_helper.dart';
-import 'package:gsg_firebase/Auth/models/LoginForm.dart';
 import 'package:gsg_firebase/Auth/models/countryModel.dart';
 import 'package:gsg_firebase/Auth/models/register_request.dart';
 import 'package:gsg_firebase/Auth/models/user_model.dart';
 import 'package:gsg_firebase/Auth/ui/pages/main_page.dart';
 import 'package:gsg_firebase/chats/pages/home_page.dart';
 import 'package:gsg_firebase/services/routes_helper.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record_mp3/record_mp3.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:permission_handler/permission_handler.dart';
+// import 'package:record_mp3/record_mp3.dart';
 
 class AuthProvider extends ChangeNotifier {
   AuthProvider() {
@@ -175,10 +183,9 @@ class AuthProvider extends ChangeNotifier {
     String imageUrl = await FirebaseStorageHelper.firebaseStorageHelper
         .uploadImage(File(file.path), 'chats');
     FirestoreHelper.firestoreHelper.addMessagesToFirestore({
-      'message': message ?? '',
       'dateTime': DateTime.now(),
-      'userId': this.myId,
-      'imageUrl': imageUrl ?? ''
+      'content': imageUrl ?? '',
+      'type': 'image',
     });
   }
 
@@ -218,5 +225,94 @@ class AuthProvider extends ChangeNotifier {
     await FirestoreHelper.firestoreHelper.updateProfile(userModel);
     getUserFromFirebase();
     Navigator.of(RouteHelper.routeHelper.navKey.currentContext).pop();
+  }
+
+  ///////////////////////////////////////////for voice
+  int i = 0;
+  String recordFilePath;
+  bool isPlayingMsg = false, isSending = false, isRecording = false;
+
+  sendAudioMsg(String recordFilePath) async {
+    String audioMsg = await FirebaseStorageHelper.firebaseStorageHelper
+        .uploadAudio(recordFilePath);
+    FirestoreHelper.firestoreHelper.addMessagesToFirestore({
+      'type': 'audio',
+      'dateTime': DateTime.now(),
+      'content': audioMsg ?? '',
+    });
+  }
+
+  Future<String> getFilePath() async {
+    Directory storageDirectory = await getApplicationDocumentsDirectory();
+    String sdPath = storageDirectory.path + "/record";
+    var d = Directory(sdPath);
+    if (!d.existsSync()) {
+      d.createSync(recursive: true);
+    }
+    return sdPath + "/test_${i++}.mp3";
+  }
+
+  Future<bool> checkPermission() async {
+    if (!await Permission.microphone.isGranted) {
+      PermissionStatus status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void startRecord() async {
+    bool hasPermission = await checkPermission();
+    if (hasPermission) {
+      recordFilePath = await getFilePath();
+
+      RecordMp3.instance.start(recordFilePath, (type) {});
+      isRecording = true;
+    } else {
+      print('no permission');
+    }
+    notifyListeners();
+  }
+
+  void stopRecord() async {
+    bool s = RecordMp3.instance.stop();
+    if (s) {
+      isSending = true;
+      sendAudioMsg(recordFilePath);
+      isPlayingMsg = false;
+    }
+    notifyListeners();
+  }
+
+  Future<void> play() async {
+    if (recordFilePath != null && File(recordFilePath).existsSync()) {
+      AudioPlayer audioPlayer = AudioPlayer();
+      await audioPlayer.play(
+        recordFilePath,
+        isLocal: true,
+      );
+    }
+    notifyListeners();
+  }
+
+  Future loadFile(String url) async {
+    Uri myUri = Uri.parse(url);
+    final bytes = await readBytes(myUri);
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/audio.mp3');
+
+    await file.writeAsBytes(bytes);
+    if (await file.exists()) {
+      recordFilePath = file.path;
+      isPlayingMsg = true;
+      print(isPlayingMsg);
+      notifyListeners();
+
+      await play();
+
+      isPlayingMsg = false;
+    }
+    notifyListeners();
   }
 }

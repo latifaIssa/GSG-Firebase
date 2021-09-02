@@ -32,10 +32,19 @@ dependencies:
   firebase_auth: "^3.0.1"
   provider: ^5.0.0
   cloud_firestore: "^2.5.0"
-  shared_preferences: ^2.0.6
+  # shared_preferences: ^2.0.6
   firebase_storage: "^10.0.2"
   image_picker: ^0.8.3+3
   bubble: ^1.2.1
+  record_mp3: ^3.0.0
+  # record_mp3: ^3.0.0
+  # audioplayers: ^0.19.1
+  path: ^1.5.0
+  permission_handler: ^8.1.4+2
+  path_provider: ^2.0.2
+  audioplayers: ^0.19.0
+  http: ^0.13.3
+  # audio_recorder: ^1.0.2
 
 
 dev_dependencies:
